@@ -24,7 +24,9 @@
     "typecheck": "flow",
     "android": "react-native-scripts android",
     "ios": "react-native-scripts ios",
-    "test": "jest"
+    "test-src": "jest --coverage",
+    "test-watch": "yarn test-src --watch",
+    "test": "yarn lint && yarn typecheck && yarn test-src"
   },
   "jest": {
     "preset": "jest-expo"
