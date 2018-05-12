@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 import {createStackNavigator, createBottomTabNavigator} from 'react-navigation';
+import Expo from 'expo';
 import {Ionicons} from '@expo/vector-icons';
 import {LIGHT_BLUE, ORANGE, WHITE} from '../general/colors';
 import getStatusBarHeight from '../helpers/getStatusBarHeight';
@@ -20,39 +21,84 @@ type Props = {
   navigation: Navigation,
 };
 
-export default function Compass(props: Props) {
-  let {navigation} = props;
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.trophy}
-          onPress={() => navigation.navigate('Achievement')}
-        >
-          <Image
-            source={require('../assets/trophy.png')}
+type State = {
+  vector: ?{
+    x: number,
+    y: number,
+    z: number,
+  },
+};
+export default class Compass extends Component<Props, State> {
+  state = {
+    vector: null,
+  };
+  _setupMagnetometerAsync = async () => {
+    Expo.Magnetometer.addListener((vector) => {
+      this.setState({vector});
+    });
+  };
+  componentDidMount() {
+    this._setupMagnetometerAsync();
+  }
+  render() {
+    let {navigation} = this.props;
+    let {vector} = this.state;
+    let theta = '0rad';
+    if (vector) {
+      let {x, y, z} = vector;
+      theta = Math.atan(-x / y);
+      if (-x > 0 && y > 0) {
+        //
+      } else if (y > 0) {
+        theta += Math.PI;
+      } else {
+        theta += Math.PI * 2;
+      }
+    }
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.trophy}
+            onPress={() => navigation.navigate('Achievement')}
+          >
+            <Image
+              source={require('../assets/trophy.png')}
+              style={{
+                width: 36,
+                height: 36,
+              }}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+          <Text style={styles.title}>Treasure Pilot</Text>
+        </View>
+        <ImageBackground
+          source={require('../assets/compass.png')}
+          style={{
+            width: 300,
+            height: 300,
+            transform: [{rotate: `${theta}rad`}],
+          }}
+          resizeMode="contain"
+        />
+        <View style={styles.distance}>
+          <Text
             style={{
-              width: 36,
-              height: 36,
+              color: WHITE,
+              fontSize: 40,
+              fontWeight: '500',
             }}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-        <Text style={styles.title}>Treasure Pilot</Text>
+          >
+            10
+          </Text>
+          <Text style={{color: WHITE, fontSize: 20, fontWeight: '300'}}>
+            METER
+          </Text>
+        </View>
       </View>
-      <ImageBackground
-        source={require('../assets/compass.png')}
-        style={styles.background}
-        resizeMode="contain"
-      />
-      <View style={styles.distance}>
-        <Text style={{color: WHITE, fontSize: 40, fontWeight: '500'}}>10</Text>
-        <Text style={{color: WHITE, fontSize: 20, fontWeight: '300'}}>
-          METER
-        </Text>
-      </View>
-    </View>
-  );
+    );
+  }
 }
 
 let styles = StyleSheet.create({
