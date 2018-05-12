@@ -43,12 +43,12 @@ export default class Compass extends Component<Props, State> {
   render() {
     let {navigation} = this.props;
     let {vector} = this.state;
-    let theta = '0rad';
+    let theta = 0;
     if (vector) {
       let {x, y, z} = vector;
       theta = Math.atan(-x / y);
       if (-x > 0 && y > 0) {
-        //
+        theta = theta;
       } else if (y > 0) {
         theta += Math.PI;
       } else {
