@@ -2,6 +2,7 @@
 
 import Achievement from './Achievement';
 import Compass from './Compass';
-import Scaner from './Scanner';
+import QAScene from './QAScene';
+import Scanner from './Scanner';
 
-export {Achievement, Compass, Scaner};
+export {Achievement, Compass, QAScene, Scanner};
