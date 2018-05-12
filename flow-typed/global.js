@@ -5,6 +5,8 @@
 import React from 'react';
 import type {StyleObj} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 
+declare type StyleSet = StyleObj | Object | Array<StyleObj | Object>;
+
 declare type ReactNode =
   | null
   | string
