@@ -1,10 +1,23 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {BarCodeScanner, Permissions} from 'expo';
+import {qaList} from '../data/q&a';
 
-export default class BarcodeScannerExample extends React.Component {
+type Props = {
+  navigation: Navigation,
+};
+
+type State = {
+  hasCameraPermission: boolean,
+  data: ?{
+    id: number,
+    type: string,
+  },
+};
+export default class BarcodeScannerExample extends Component<Props, State> {
   state = {
     hasCameraPermission: null,
+    data: null,
   };
 
   async componentWillMount() {
@@ -31,7 +44,16 @@ export default class BarcodeScannerExample extends React.Component {
     }
   }
 
-  _handleBarCodeRead = ({type, data}) => {
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+  _handleBarCodeRead = ({data}) => {
+    let {navigation} = this.props;
+    let {type, id} = data;
+    switch (type) {
+      case 'qa':
+        navigation.navigate('QACard', {data});
+        break;
+      default:
+        navigation.navigate('QACard', {data});
+        break;
+    }
   };
 }

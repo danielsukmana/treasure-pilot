@@ -3,7 +3,7 @@
 import React from 'react';
 import {createStackNavigator, createBottomTabNavigator} from 'react-navigation';
 import {Ionicons} from '@expo/vector-icons';
-import {Achievement, Compass, Scaner} from '../scenes';
+import {Achievement, Compass, QAScene, Scanner} from '../scenes';
 import getIconPre from '../helpers/getIconPre';
 import {LIGHT_BLUE, GREY, WHITE} from '../general/colors';
 
@@ -23,6 +23,22 @@ const TreasureStackNav = createStackNavigator(
   },
 );
 
+const TaskStackNav = createStackNavigator(
+  {
+    QRCodeReader: {
+      screen: Scanner,
+    },
+    QACard: {
+      screen: QAScene,
+    },
+  },
+  {
+    mode: 'card',
+    headerMode: 'none',
+    initialRouteName: 'QRCodeReader',
+  },
+);
+
 export const Tabs = createBottomTabNavigator(
   {
     Tab1: {
@@ -39,7 +55,7 @@ export const Tabs = createBottomTabNavigator(
       },
     },
     Tab2: {
-      screen: Scaner,
+      screen: TaskStackNav,
       navigationOptions: () => ({
         tabBarLabel: 'Scanner',
         tabBarIcon: ({tintColor}: Object, focused: boolean) => (

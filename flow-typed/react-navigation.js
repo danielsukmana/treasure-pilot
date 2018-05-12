@@ -64,6 +64,7 @@ type ReactNavigation = {
 };
 
 declare type Navigation = {
+  getParams: () => void,
   navigate: (route: string, params?: Params) => void,
   goBack: () => void,
   state: {params: {[key: string]: any}},
