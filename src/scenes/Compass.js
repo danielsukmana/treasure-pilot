@@ -1,6 +1,6 @@
 //@flow
 
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import {
   Image,
   ImageBackground,
@@ -22,24 +22,32 @@ type Props = {
 };
 
 type State = {
+  isCompassActive: boolean,
   vector: ?{
     x: number,
     y: number,
     z: number,
   },
 };
-export default class Compass extends Component<Props, State> {
-  state = {
-    vector: null,
-  };
+export default class Compass extends PureComponent<Props, State> {
+  constructor() {
+    super(...arguments);
+    this.state = {
+      isCompassActive: false,
+      vector: null,
+    };
+  }
+
   _setupMagnetometerAsync = async () => {
     Expo.Magnetometer.addListener((vector) => {
       this.setState({vector});
     });
   };
+
   componentDidMount() {
     this._setupMagnetometerAsync();
   }
+
   render() {
     let {navigation} = this.props;
     let {vector} = this.state;
@@ -83,18 +91,20 @@ export default class Compass extends Component<Props, State> {
           resizeMode="contain"
         />
         <View style={styles.distance}>
-          <Text
-            style={{
-              color: WHITE,
-              fontSize: 40,
-              fontWeight: '500',
-            }}
-          >
-            10
-          </Text>
-          <Text style={{color: WHITE, fontSize: 20, fontWeight: '300'}}>
-            METER
-          </Text>
+          <View style={{flex: 1}}>
+            <Text
+              style={{
+                color: WHITE,
+                fontSize: 40,
+                fontWeight: '500',
+              }}
+            >
+              10
+            </Text>
+            <Text style={{color: WHITE, fontSize: 20, fontWeight: '300'}}>
+              METER
+            </Text>
+          </View>
         </View>
       </View>
     );

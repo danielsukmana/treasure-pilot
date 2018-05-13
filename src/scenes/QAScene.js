@@ -8,26 +8,32 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {NavigationActions} from 'react-navigation';
+import {connect} from 'react-redux';
+
 import {DARK_NAVI, LIGHT_BLUE, ORANGE, WHITE} from '../general/colors';
 import getStatusBarHeight from '../helpers/getStatusBarHeight';
 import {qaList} from '../data/q&a';
 import CheckItem from '../general/core-ui/CheckItem';
+import type {RootState} from '../reducers';
+
 type Props = {
   navigation: Navigation,
+  currentAchievement: ?number,
+  getSuccessAnswer: (number) => void,
 };
 type State = {
   value: ?number,
 };
 
-export default class QAScene extends Component<Props, State> {
+class QAScene extends Component<Props, State> {
   state = {
     value: null,
   };
   render() {
     // $FlowFixMe;
-    let {data} = this.props.navigation.state.params;
-    let dataToObject = JSON.parse(data);
-    let qa = qaList[dataToObject.id - 1];
+    let {currentAchievement} = this.props;
+    let qa = qaList[currentAchievement || 0];
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -47,11 +53,10 @@ export default class QAScene extends Component<Props, State> {
     );
   }
 
-  _onSubmit() {}
   _renderQuestion(qa: Object) {
     return (
       <View style={styles.question}>
-        <Text style={styles.subtitle}>Pertanyaan No. 1</Text>
+        <Text style={styles.subtitle}>Pertanyaan No. {qa.id}</Text>
         <Text style={styles.desc}>{qa.question}</Text>
       </View>
     );
@@ -67,7 +72,7 @@ export default class QAScene extends Component<Props, State> {
               key={index}
               checked={index === this.state.value}
               value={answer.value}
-              onPress={() => this._onPress(index)}
+              onPress={() => this._onAnswerClicked(index)}
             />
           ))}
         </View>
@@ -75,10 +80,41 @@ export default class QAScene extends Component<Props, State> {
     );
   }
 
-  _onPress(value) {
+  _onAnswerClicked(value) {
     this.setState({value});
   }
+
+  _onSubmit() {
+    let {currentAchievement, getSuccessAnswer} = this.props;
+    let {value} = this.state;
+    if (value === null) {
+      alert('Anda harus mengilih satu jawaban!');
+    } else {
+      getSuccessAnswer(currentAchievement || 0);
+      //$FlowFixMe
+      this.props.navigation.replace('Achievement');
+    }
+  }
 }
+
+const mapStateToProps = (state: RootState) => {
+  return {
+    currentAchievement: state.qa.currentAchievement,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getSuccessAnswer: (currenctQuestion) => {
+      dispatch({
+        type: 'SUCCEED_ANSWERED',
+        payload: currenctQuestion + 1,
+      });
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(QAScene);
 
 type AnswerProps = {
   checked: boolean,
