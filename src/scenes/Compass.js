@@ -103,7 +103,7 @@ export default class Compass extends PureComponent<Props, State> {
     let theta = 0;
     if (vector) {
       let {x, y, z} = vector;
-      theta = Math.atan(-x / y);
+      theta = Math.atan(x / y);
       if (-x > 0 && y > 0) {
         theta = theta;
       } else if (y > 0) {
