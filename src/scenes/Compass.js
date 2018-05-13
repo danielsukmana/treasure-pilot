@@ -33,9 +33,11 @@ type State = {
     lat: number,
     lon: number,
   },
+  deviceHeading: number,
 };
 export default class Compass extends PureComponent<Props, State> {
   _positionListener: ?{remove: () => void};
+  _headingListener: ?{remove: () => void};
 
   constructor() {
     super(...arguments);
@@ -43,6 +45,7 @@ export default class Compass extends PureComponent<Props, State> {
       isCompassActive: false,
       vector: null,
       deviceCoordinate: null,
+      deviceHeading: 0,
     };
   }
 
@@ -80,6 +83,23 @@ export default class Compass extends PureComponent<Props, State> {
     }
   };
 
+  _setupHeadingAsync = async () => {
+    const {Location} = Expo;
+    let status = await this._askLocationPermissionAsync();
+    if (status === 'granted') {
+      let {magHeading} = await Location.getHeadingAsync();
+      this.setState({deviceHeading: magHeading});
+      this._headingListener = await Location.watchHeadingAsync(({magHeading}) =>
+        this.setState({deviceHeading: magHeading}),
+      );
+    } else {
+      Alert.alert(
+        'Permission Denied',
+        `Oops! Seems like you denied our permission request. We need to access your device's location to track where you are and guide you to the treasure. So let's enable it and start hunting!`,
+      );
+    }
+  };
+
   _setupMagnetometerAsync = async () => {
     Expo.Magnetometer.addListener((vector) => {
       this.setState({vector});
@@ -88,12 +108,16 @@ export default class Compass extends PureComponent<Props, State> {
 
   componentDidMount() {
     this._setupLocationAsync();
+    this._setupHeadingAsync();
     this._setupMagnetometerAsync();
   }
 
   componentWillUnmount() {
     if (this._positionListener) {
       this._positionListener.remove();
+    }
+    if (this._headingListener) {
+      this._headingListener.remove();
     }
   }
 
