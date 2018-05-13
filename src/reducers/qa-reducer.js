@@ -3,9 +3,10 @@
 import {qaList} from '../data/q&a';
 import type {QA} from '../data/q&a';
 
-type State = {
+export type QAState = {
   qaList: Array<QA>,
-  currentAchievement: number,
+  currentAchievement: ?number,
+  succeedList: Array<number>,
 };
 
 type Action = {
@@ -13,17 +14,31 @@ type Action = {
   payload: Object,
 };
 
-const initialState: State = {
+const initialState: QAState = {
   qaList: qaList,
-  currentAchievement: 1,
+  currentAchievement: null,
+  succeedList: [],
 };
 
-export default function qaReducer(state: State = initialState, action: Action) {
+export default function qaReducer(
+  state: QAState = initialState,
+  action: Action,
+) {
   switch (action.type) {
     case 'FETCH_CURRENT_QA':
       return {
         ...state,
         currentAchievement: action.payload.id,
+      };
+    case 'SAVE_QR_DATA':
+      return {
+        ...state,
+        currentAchievement: action.payload.id,
+      };
+    case 'SUCCEED_ANSWERED':
+      return {
+        ...state,
+        succeedList: [...state.succeedList, action.payload],
       };
     default:
       return state;
