@@ -3,7 +3,7 @@
 import React, {Component} from 'react';
 import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {connect} from 'react-redux';
-import {DARK_NAVI, LIGHT_BLUE, LIGHT_OCEAN, WHITE} from '../general/colors';
+import {ORANGE, LIGHT_BLUE, WHITE} from '../general/colors';
 import getStatusBarHeight from '../helpers/getStatusBarHeight';
 
 import type {RootState} from '../reducers';
@@ -61,6 +61,7 @@ function Card(props: CardType) {
   let rightAnswer = '';
   data.answers.forEach((answer) => {
     if (answer.isCorrect) {
+      //$FlowFixMe
       rightAnswer += answer.value;
     }
   });
@@ -90,7 +91,7 @@ function Card(props: CardType) {
       >
         <View style={{flex: 1}}>
           <Text style={styles.question}>{data.question}</Text>
-          <Text style={[styles.question, {color: DARK_NAVI}]}>
+          <Text style={[styles.question, {fontWeight: 'bold'}]}>
             {rightAnswer}
           </Text>
         </View>
@@ -110,7 +111,7 @@ export default connect(mapStateToProps)(Achievement);
 let styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: DARK_NAVI,
+    backgroundColor: ORANGE,
   },
   header: {
     flex: 1,
@@ -128,7 +129,7 @@ let styles = StyleSheet.create({
   },
   wrapper: {
     width: '90%',
-    backgroundColor: LIGHT_OCEAN,
+    backgroundColor: WHITE,
     borderRadius: 5,
     margin: 10,
   },

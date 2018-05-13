@@ -11,7 +11,7 @@ import {
 import {NavigationActions} from 'react-navigation';
 import {connect} from 'react-redux';
 
-import {DARK_NAVI, LIGHT_BLUE, ORANGE, WHITE} from '../general/colors';
+import {LIGHT_BLUE, ORANGE, WHITE} from '../general/colors';
 import getStatusBarHeight from '../helpers/getStatusBarHeight';
 import {qaList} from '../data/q&a';
 import CheckItem from '../general/core-ui/CheckItem';
@@ -46,7 +46,7 @@ class QAScene extends Component<Props, State> {
             onPress={() => this._onSubmit()}
             style={styles.submit}
           >
-            <Text style={styles.desc}>GO !!!</Text>
+            <Text style={[styles.desc, {color: WHITE}]}>GO !!!</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -56,7 +56,7 @@ class QAScene extends Component<Props, State> {
   _renderQuestion(qa: Object) {
     return (
       <View style={styles.question}>
-        <Text style={styles.subtitle}>Pertanyaan No. {qa.id}</Text>
+        <Text style={[styles.subtitle]}>Pertanyaan No. {qa.id}</Text>
         <Text style={styles.desc}>{qa.question}</Text>
       </View>
     );
@@ -87,8 +87,15 @@ class QAScene extends Component<Props, State> {
   _onSubmit() {
     let {currentAchievement, getSuccessAnswer} = this.props;
     let {value} = this.state;
+    let qa = qaList[currentAchievement || 0];
+    let isCorrect = false;
+    if (value) {
+      isCorrect = qa.answers[value].isCorrect;
+    }
     if (value === null) {
       alert('Anda harus mengilih satu jawaban!');
+    } else if (!isCorrect) {
+      alert('Jawaban Anda salah. Coba lagi.');
     } else {
       getSuccessAnswer(currentAchievement);
       //$FlowFixMe
@@ -131,7 +138,7 @@ function Answer(props: AnswerProps) {
       <CheckItem
         type="radioButton"
         size={23}
-        color={WHITE}
+        color="grey"
         checked={checked}
         onPress={onPress}
       />
@@ -144,7 +151,7 @@ let styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: DARK_NAVI,
+    backgroundColor: ORANGE,
   },
   header: {
     flex: 1,
@@ -163,8 +170,8 @@ let styles = StyleSheet.create({
   question: {
     marginVertical: 10,
     marginHorizontal: 10,
-    backgroundColor: ORANGE,
     borderRadius: 5,
+    backgroundColor: WHITE,
   },
   subtitle: {
     color: WHITE,
@@ -175,7 +182,7 @@ let styles = StyleSheet.create({
     padding: 10,
   },
   desc: {
-    color: WHITE,
+    color: 'grey',
     fontSize: 16,
     borderTopRightRadius: 5,
     borderTopLeftRadius: 5,

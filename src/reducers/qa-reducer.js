@@ -46,14 +46,9 @@ export default function qaReducer(
 }
 
 function updateSuccedList(oldSucceedList, newID) {
-  if (oldSucceedList.length === 0) {
-    return [newID];
+  if (!oldSucceedList.includes(newID)) {
+    return [...oldSucceedList, newID];
+  } else {
+    return oldSucceedList;
   }
-  let newSuccedList = oldSucceedList;
-  oldSucceedList.forEach((item) => {
-    if (item != newID) {
-      newSuccedList = [...newSuccedList, newID];
-    }
-  });
-  return newSuccedList;
 }
