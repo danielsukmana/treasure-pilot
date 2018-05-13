@@ -34,28 +34,44 @@ type State = {
     lon: number,
   },
 };
-export default class Compass extends Component<Props, State> {
+export default class Compass extends PureComponent<Props, State> {
   _positionListener: ?{remove: () => void};
 
   constructor() {
     super(...arguments);
-    state = {
+    this.state = {
       isCompassActive: false,
       vector: null,
       deviceCoordinate: null,
     };
   }
 
+  _askLocationPermissionAsync = async () => {
+    const {Permissions, Location} = Expo;
+    let permission = await Permissions.getAsync(Permissions.LOCATION);
+    if (permission.status !== 'granted') {
+      let asked = await Permissions.askAsync(Permissions.LOCATION);
+      return asked.status;
+    } else {
+      return permission.status;
+    }
+  };
+
   _setupLocationAsync = async () => {
-    let {status} = await Expo.Permissions.askAsync(Expo.Permissions.LOCATION);
+    const {Location} = Expo;
+    let status = await this._askLocationPermissionAsync();
     if (status === 'granted') {
       let {
         coords: {latitude, longitude},
-      } = await Expo.Location.getCurrentPositionAsync({
+      } = await Location.getCurrentPositionAsync({
         enableHighAccuracy: true,
       });
       this.setState({deviceCoordinate: {lat: latitude, lon: longitude}});
-      this._positionListener = await Expo.Location.watchPositionAsync();
+      this._positionListener = await Location.watchPositionAsync(
+        ({coords: {latitude, longitude}}) => {
+          this.setState({deviceCoordinate: {lat: latitude, lon: longitude}});
+        },
+      );
     } else {
       Alert.alert(
         'Permission Denied',
@@ -83,7 +99,7 @@ export default class Compass extends Component<Props, State> {
 
   render() {
     let {navigation} = this.props;
-    let {vector, deviceCoordinate} = this.state;
+    let {vector} = this.state;
     let theta = 0;
     if (vector) {
       let {x, y, z} = vector;
