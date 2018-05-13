@@ -38,9 +38,22 @@ export default function qaReducer(
     case 'SUCCEED_ANSWERED':
       return {
         ...state,
-        succeedList: [...state.succeedList, action.payload],
+        succeedList: updateSuccedList(state.succeedList, action.payload.newID),
       };
     default:
       return state;
   }
+}
+
+function updateSuccedList(oldSucceedList, newID) {
+  if (oldSucceedList.length === 0) {
+    return [newID];
+  }
+  let newSuccedList = oldSucceedList;
+  oldSucceedList.forEach((item) => {
+    if (item != newID) {
+      newSuccedList = [...newSuccedList, newID];
+    }
+  });
+  return newSuccedList;
 }
