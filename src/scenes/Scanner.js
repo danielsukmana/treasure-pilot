@@ -1,11 +1,12 @@
 // @flow
 
 import React, {Component} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {connect} from 'react-redux';
 
 import {BarCodeScanner, Permissions} from 'expo';
 import {qaList} from '../data/q&a';
+import {LIGHT_BLUE, WHITE} from '../general/colors';
 
 type QRData = {
   id: number,
@@ -42,7 +43,17 @@ class Scanner extends Component<Props, State> {
         </View>
       );
     } else if (hasCameraPermission === false) {
-      return <Text>No access to camera</Text>;
+      return (
+        <View style={styles.container}>
+          <Text style={styles.text}>No access to camera</Text>
+          <TouchableOpacity
+            onPress={() => this.setState({hasCameraPermission: true})}
+            style={styles.button}
+          >
+            <Text style={{color: WHITE, fontSize: 16}}>Aktifkan Kamera</Text>
+          </TouchableOpacity>
+        </View>
+      );
     } else {
       return (
         <View style={{flex: 1}}>
@@ -61,6 +72,7 @@ class Scanner extends Component<Props, State> {
     if (QRData.type === 'qa') {
       saveQRData(QRData);
       navigation.navigate('QACard');
+      this.setState({hasCameraPermission: false});
     }
   };
 }
@@ -87,5 +99,11 @@ let styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
+  },
+  button: {
+    backgroundColor: LIGHT_BLUE,
+    borderRadius: 5,
+    padding: 10,
+    margin: 10,
   },
 });

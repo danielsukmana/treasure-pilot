@@ -19,8 +19,8 @@ import type {RootState} from '../reducers';
 
 type Props = {
   navigation: Navigation,
-  currentAchievement: ?number,
-  getSuccessAnswer: (number) => void,
+  currentAchievement: number,
+  getSuccessAnswer: (newID: number) => void,
 };
 type State = {
   value: ?number,
@@ -90,7 +90,7 @@ class QAScene extends Component<Props, State> {
     if (value === null) {
       alert('Anda harus mengilih satu jawaban!');
     } else {
-      getSuccessAnswer(currentAchievement || 0);
+      getSuccessAnswer(currentAchievement);
       //$FlowFixMe
       this.props.navigation.replace('Achievement');
     }
@@ -99,7 +99,7 @@ class QAScene extends Component<Props, State> {
 
 const mapStateToProps = (state: RootState) => {
   return {
-    currentAchievement: state.qa.currentAchievement,
+    currentAchievement: state.qa.currentAchievement || 0,
   };
 };
 
@@ -108,7 +108,9 @@ const mapDispatchToProps = (dispatch) => {
     getSuccessAnswer: (currenctQuestion) => {
       dispatch({
         type: 'SUCCEED_ANSWERED',
-        payload: currenctQuestion + 1,
+        payload: {
+          newID: currenctQuestion + 1,
+        },
       });
     },
   };
