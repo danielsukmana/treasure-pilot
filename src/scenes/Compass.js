@@ -10,6 +10,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Alert,
 } from 'react-native';
 import {createStackNavigator, createBottomTabNavigator} from 'react-navigation';
 import Expo from 'expo';
@@ -28,15 +29,40 @@ type State = {
     y: number,
     z: number,
   },
+  deviceCoordinate: ?{
+    lat: number,
+    lon: number,
+  },
 };
-export default class Compass extends PureComponent<Props, State> {
+export default class Compass extends Component<Props, State> {
+  _positionListener: ?{remove: () => void};
+
   constructor() {
     super(...arguments);
-    this.state = {
+    state = {
       isCompassActive: false,
       vector: null,
+      deviceCoordinate: null,
     };
   }
+
+  _setupLocationAsync = async () => {
+    let {status} = await Expo.Permissions.askAsync(Expo.Permissions.LOCATION);
+    if (status === 'granted') {
+      let {
+        coords: {latitude, longitude},
+      } = await Expo.Location.getCurrentPositionAsync({
+        enableHighAccuracy: true,
+      });
+      this.setState({deviceCoordinate: {lat: latitude, lon: longitude}});
+      this._positionListener = await Expo.Location.watchPositionAsync();
+    } else {
+      Alert.alert(
+        'Permission Denied',
+        `Oops! Seems like you denied our permission request. We need to access your device's location to track where you are and guide you to the treasure. So let's enable it and start hunting!`,
+      );
+    }
+  };
 
   _setupMagnetometerAsync = async () => {
     Expo.Magnetometer.addListener((vector) => {
@@ -45,12 +71,19 @@ export default class Compass extends PureComponent<Props, State> {
   };
 
   componentDidMount() {
+    this._setupLocationAsync();
     this._setupMagnetometerAsync();
+  }
+
+  componentWillUnmount() {
+    if (this._positionListener) {
+      this._positionListener.remove();
+    }
   }
 
   render() {
     let {navigation} = this.props;
-    let {vector} = this.state;
+    let {vector, deviceCoordinate} = this.state;
     let theta = 0;
     if (vector) {
       let {x, y, z} = vector;
