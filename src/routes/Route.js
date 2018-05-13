@@ -31,6 +31,11 @@ const TaskStackNav = createStackNavigator(
     QACard: {
       screen: QAScene,
     },
+    //NOTE: I need to add the Treasure route here for carrying the data
+    //TODO: Need a better way to reset the routes and navigate to Achievement with params
+    Achievement: {
+      screen: Achievement,
+    },
   },
   {
     mode: 'card',
