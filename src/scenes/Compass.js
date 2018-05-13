@@ -10,6 +10,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Alert,
 } from 'react-native';
 import {createStackNavigator, createBottomTabNavigator} from 'react-navigation';
 import Expo from 'expo';
@@ -28,15 +29,56 @@ type State = {
     y: number,
     z: number,
   },
+  deviceCoordinate: ?{
+    lat: number,
+    lon: number,
+  },
 };
 export default class Compass extends PureComponent<Props, State> {
+  _positionListener: ?{remove: () => void};
+
   constructor() {
     super(...arguments);
     this.state = {
       isCompassActive: false,
       vector: null,
+      deviceCoordinate: null,
     };
   }
+
+  _askLocationPermissionAsync = async () => {
+    const {Permissions, Location} = Expo;
+    let permission = await Permissions.getAsync(Permissions.LOCATION);
+    if (permission.status !== 'granted') {
+      let asked = await Permissions.askAsync(Permissions.LOCATION);
+      return asked.status;
+    } else {
+      return permission.status;
+    }
+  };
+
+  _setupLocationAsync = async () => {
+    const {Location} = Expo;
+    let status = await this._askLocationPermissionAsync();
+    if (status === 'granted') {
+      let {
+        coords: {latitude, longitude},
+      } = await Location.getCurrentPositionAsync({
+        enableHighAccuracy: true,
+      });
+      this.setState({deviceCoordinate: {lat: latitude, lon: longitude}});
+      this._positionListener = await Location.watchPositionAsync(
+        ({coords: {latitude, longitude}}) => {
+          this.setState({deviceCoordinate: {lat: latitude, lon: longitude}});
+        },
+      );
+    } else {
+      Alert.alert(
+        'Permission Denied',
+        `Oops! Seems like you denied our permission request. We need to access your device's location to track where you are and guide you to the treasure. So let's enable it and start hunting!`,
+      );
+    }
+  };
 
   _setupMagnetometerAsync = async () => {
     Expo.Magnetometer.addListener((vector) => {
@@ -45,7 +87,14 @@ export default class Compass extends PureComponent<Props, State> {
   };
 
   componentDidMount() {
+    this._setupLocationAsync();
     this._setupMagnetometerAsync();
+  }
+
+  componentWillUnmount() {
+    if (this._positionListener) {
+      this._positionListener.remove();
+    }
   }
 
   render() {
@@ -54,7 +103,7 @@ export default class Compass extends PureComponent<Props, State> {
     let theta = 0;
     if (vector) {
       let {x, y, z} = vector;
-      theta = Math.atan(-x / y);
+      theta = Math.atan(x / y);
       if (-x > 0 && y > 0) {
         theta = theta;
       } else if (y > 0) {
