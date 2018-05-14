@@ -83,8 +83,6 @@ class Scanner extends Component<Props, State> {
   _handleBarCodeRead = ({data}) => {
     let {navigation, saveQRData, lastAnsweredAchievement} = this.props;
     let QRData = JSON.parse(data);
-    console.log(QRData.id);
-    console.log(lastAnsweredAchievement);
     if (lastAnsweredAchievement + 1 != QRData.id) {
       this.setState({isScanning: false});
       alert('Anda belum menjawab pertanyaan sebelumnya');
@@ -99,7 +97,6 @@ class Scanner extends Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => {
-  console.log('MSP ', state.qa);
   return {
     lastAnsweredAchievement: state.qa.succeedList.length,
   };
