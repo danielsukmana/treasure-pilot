@@ -11,6 +11,9 @@ import {
 import {NavigationActions} from 'react-navigation';
 import {connect} from 'react-redux';
 
+import {Ionicons} from '@expo/vector-icons';
+import getIconPre from '../helpers/getIconPre';
+
 import {LIGHT_BLUE, WHITE, GREY} from '../general/colors';
 import getStatusBarHeight from '../helpers/getStatusBarHeight';
 import {qaList} from '../data/q&a';
@@ -40,15 +43,23 @@ class QAScene extends Component<Props, State> {
           <Text style={styles.title}>Question & Answer</Text>
         </View>
         <ScrollView>
-          {currentAchievement === 3 ? this._renderFinish() : this._renderQA(qa)}
+          {currentAchievement === 0 ? this._renderFinish() : this._renderQA(qa)}
         </ScrollView>
       </View>
     );
   }
   _renderFinish() {
     return (
-      <View>
-        <Text>BERHASIL !!</Text>
+      <View style={styles.finishContainer}>
+        <Ionicons
+          name={`${getIconPre()}-trophy`}
+          size={200}
+          color="#000"
+          backgroundColor="#000000"
+          style={{flex: 1, margin: 10}}
+        />
+        <Text style={styles.successText}>BERHASIL</Text>
+        <Text style={styles.successText}>Anda telah mencapai finish</Text>
       </View>
     );
   }
@@ -215,5 +226,13 @@ let styles = StyleSheet.create({
     alignItems: 'center',
     margin: 5,
     padding: 5,
+  },
+  finishContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  successText: {
+    fontSize: 16,
   },
 });
