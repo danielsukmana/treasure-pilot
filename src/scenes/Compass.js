@@ -72,11 +72,13 @@ export default class Compass extends PureComponent<Props, State> {
         enableHighAccuracy: true,
       });
       this.setState({deviceCoordinate: {lat: latitude, lon: longitude}});
-      this._positionListener = await Location.watchPositionAsync(
-        ({coords: {latitude, longitude}}) => {
-          this.setState({deviceCoordinate: {lat: latitude, lon: longitude}});
-        },
-      );
+      try {
+        this._positionListener = await Location.watchPositionAsync(
+          ({coords: {latitude, longitude}}) => {
+            this.setState({deviceCoordinate: {lat: latitude, lon: longitude}});
+          },
+        );
+      } catch (e) {}
     } else {
       Alert.alert(
         'Permission Denied',
