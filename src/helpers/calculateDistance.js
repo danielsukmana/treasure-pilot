@@ -8,12 +8,12 @@ type Coordinate = {
 };
 
 export default function calculateDistance(
-  coord1: Coordinate,
-  coord2: Coordinate,
+  currentCoordinate: Coordinate,
+  targetCoordinate: Coordinate,
 ): number {
   let toRadians = (val) => val * Math.PI / 180;
-  let {lat: lat1, lon: lon1} = coord1;
-  let {lat: lat2, lon: lon2} = coord2;
+  let {lat: lat1, lon: lon1} = currentCoordinate;
+  let {lat: lat2, lon: lon2} = targetCoordinate;
   let R = 6371e3; // metres
   let dLat = toRadians(lat2 - lat1);
   let dLon = toRadians(lon2 - lon1);
@@ -25,5 +25,5 @@ export default function calculateDistance(
       Math.sin(dLon / 2);
   let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   let d = R * c;
-  return d;
+  return d.toFixed(2);
 }

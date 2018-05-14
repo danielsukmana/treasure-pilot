@@ -19,6 +19,7 @@ import {Ionicons} from '@expo/vector-icons';
 import {LIGHT_BLUE, ORANGE, WHITE, TRANSPARENT} from '../general/colors';
 import getStatusBarHeight from '../helpers/getStatusBarHeight';
 import getIconPre from '../helpers/getIconPre';
+import calculateDistance from '../helpers/calculateDistance';
 
 type Props = {
   navigation: Navigation,
@@ -98,9 +99,6 @@ export default class Compass extends PureComponent<Props, State> {
         theta += Math.PI * 2;
       }
     }
-    console.log(
-      calculateDegree(currentCoordinate, targetCoordinate, heading) + 'deg',
-    );
 
     return (
       <View style={styles.container}>
@@ -181,7 +179,18 @@ export default class Compass extends PureComponent<Props, State> {
             <View style={{flexDirection: 'row'}}>
               <View style={{width: 28, height: 28}} />
               <View style={{alignItems: 'center'}}>
-                <Text style={styles.distanceValue}>10</Text>
+                <Text style={styles.distanceValue}>
+                  {calculateDistance(
+                    {
+                      lat: currentCoordinate.x,
+                      lon: currentCoordinate.y,
+                    },
+                    {
+                      lat: targetCoordinate.x,
+                      lon: targetCoordinate.y,
+                    },
+                  )}
+                </Text>
                 <Text style={styles.meter}>METER</Text>
               </View>
               <TouchableOpacity
