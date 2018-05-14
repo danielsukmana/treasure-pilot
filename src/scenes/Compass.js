@@ -13,7 +13,7 @@ import {
   Alert,
 } from 'react-native';
 import {createStackNavigator, createBottomTabNavigator} from 'react-navigation';
-import Expo from 'expo';
+import Expo, {Constants, Location, Permissions} from 'expo';
 import {Ionicons} from '@expo/vector-icons';
 import {LIGHT_BLUE, ORANGE, WHITE} from '../general/colors';
 import getStatusBarHeight from '../helpers/getStatusBarHeight';
@@ -24,85 +24,40 @@ type Props = {
 
 type State = {
   isCompassActive: boolean,
+  isNeddleActive: boolean,
   vector: ?{
     x: number,
     y: number,
     z: number,
   },
-  deviceCoordinate: ?{
-    lat: number,
-    lon: number,
+  targetCoordinate: {
+    x: string,
+    y: string,
   },
-  deviceHeading: number,
-  isCompassActive: boolean,
+  currentCoordinate: {
+    x: '',
+    y: '',
+  },
+  heading: '',
 };
 export default class Compass extends PureComponent<Props, State> {
-  _positionListener: ?{remove: () => void};
-  _headingListener: ?{remove: () => void};
-
   constructor() {
     super(...arguments);
     this.state = {
+      targetCoordinate: {
+        x: '-6.257188',
+        y: '106.619114',
+      },
+      currentCoordinate: {
+        x: '',
+        y: '',
+      },
+      heading: '',
       isCompassActive: false,
+      isNeddleActive: true,
       vector: null,
-      deviceCoordinate: null,
-      deviceHeading: 0,
-      isCompassActive: false,
     };
   }
-
-  _askLocationPermissionAsync = async () => {
-    const {Permissions, Location} = Expo;
-    let permission = await Permissions.getAsync(Permissions.LOCATION);
-    if (permission.status !== 'granted') {
-      let asked = await Permissions.askAsync(Permissions.LOCATION);
-      return asked.status;
-    } else {
-      return permission.status;
-    }
-  };
-
-  _setupLocationAsync = async () => {
-    const {Location} = Expo;
-    let status = await this._askLocationPermissionAsync();
-    if (status === 'granted') {
-      let {
-        coords: {latitude, longitude},
-      } = await Location.getCurrentPositionAsync({
-        enableHighAccuracy: true,
-      });
-      this.setState({deviceCoordinate: {lat: latitude, lon: longitude}});
-      try {
-        this._positionListener = await Location.watchPositionAsync(
-          ({coords: {latitude, longitude}}) => {
-            this.setState({deviceCoordinate: {lat: latitude, lon: longitude}});
-          },
-        );
-      } catch (e) {}
-    } else {
-      Alert.alert(
-        'Permission Denied',
-        `Oops! Seems like you denied our permission request. We need to access your device's location to track where you are and guide you to the treasure. So let's enable it and start hunting!`,
-      );
-    }
-  };
-
-  _setupHeadingAsync = async () => {
-    const {Location} = Expo;
-    let status = await this._askLocationPermissionAsync();
-    if (status === 'granted') {
-      let {magHeading} = await Location.getHeadingAsync();
-      this.setState({deviceHeading: magHeading});
-      this._headingListener = await Location.watchHeadingAsync(({magHeading}) =>
-        this.setState({deviceHeading: magHeading}),
-      );
-    } else {
-      Alert.alert(
-        'Permission Denied',
-        `Oops! Seems like you denied our permission request. We need to access your device's location to track where you are and guide you to the treasure. So let's enable it and start hunting!`,
-      );
-    }
-  };
 
   _setupMagnetometerAsync = async () => {
     Expo.Magnetometer.addListener((vector) => {
@@ -111,23 +66,20 @@ export default class Compass extends PureComponent<Props, State> {
   };
 
   componentDidMount() {
-    this._setupLocationAsync();
-    this._setupHeadingAsync();
+    this._getLocationAsync();
     this._setupMagnetometerAsync();
-  }
-
-  componentWillUnmount() {
-    if (this._positionListener) {
-      this._positionListener.remove();
-    }
-    if (this._headingListener) {
-      this._headingListener.remove();
-    }
   }
 
   render() {
     let {navigation} = this.props;
-    let {vector, isCompassActive} = this.state;
+    let {
+      currentCoordinate,
+      targetCoordinate,
+      heading,
+      vector,
+      isCompassActive,
+      isNeddleActive,
+    } = this.state;
     let theta = 0;
     if (vector) {
       let {x, y, z} = vector;
@@ -140,6 +92,10 @@ export default class Compass extends PureComponent<Props, State> {
         theta += Math.PI * 2;
       }
     }
+    console.log(
+      calculateDegree(currentCoordinate, targetCoordinate, heading) + 'deg',
+    );
+
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -168,7 +124,26 @@ export default class Compass extends PureComponent<Props, State> {
             }}
             resizeMode="contain"
           />
-        ) : null}
+        ) : (
+          <Image
+            source={require('../assets/arrow.png')}
+            style={{
+              width: 200,
+              height: 200,
+              transform: [
+                {
+                  rotateZ:
+                    calculateDegree(
+                      currentCoordinate,
+                      targetCoordinate,
+                      heading,
+                    ) + 'deg',
+                },
+              ],
+            }}
+            resizeMode="contain"
+          />
+        )}
         <TouchableOpacity
           onPress={() => this._onCompassActive()}
           style={styles.button}
@@ -198,9 +173,91 @@ export default class Compass extends PureComponent<Props, State> {
   }
 
   _onCompassActive() {
-    let {isCompassActive} = this.state;
-    this.setState({isCompassActive: !isCompassActive});
+    let {isCompassActive, isNeddleActive} = this.state;
+    this.setState({
+      isCompassActive: !isCompassActive,
+      isNeddleActive: !isNeddleActive,
+    });
   }
+
+  _getLocationAsync = async () => {
+    await Permissions.askAsync(Permissions.LOCATION);
+    Location.watchHeadingAsync((heading) => {
+      this.setState({heading: heading.magHeading});
+    });
+    Location.watchPositionAsync(
+      {
+        enableHighAccuracy: true,
+        timeInterval: 5000,
+        distanceInterval: 1,
+      },
+      (position) => {
+        this.setState({
+          currentCoordinate: {
+            x: position.coords.latitude,
+            y: position.coords.longitude,
+          },
+        });
+      },
+    );
+  };
+}
+
+function calculateDegree(currentCoordinate, targetCoordinate, heading: number) {
+  return (
+    degreeToNorth(heading) +
+    degreeFromNorth(currentCoordinate, targetCoordinate)
+  );
+}
+
+function degreeToNorth(heading: number) {
+  if (heading > 180) {
+    return 360 - heading;
+  }
+  return heading * -1;
+}
+
+function degreeFromNorth(currentCoordinate, targetCoordinate) {
+  let theta = getTheta(currentCoordinate, targetCoordinate);
+  let degreeFromNorth =
+    getDegree(currentCoordinate.y, targetCoordinate.y) - theta;
+  let xCoordinates = {x1: currentCoordinate.x, x2: targetCoordinate.x};
+  if (getSign(degreeFromNorth, xCoordinates) > 0) {
+    return degreeFromNorth;
+  } else {
+    return 360 - degreeFromNorth;
+  }
+}
+
+function getTheta(currentCoordinate, targetCoordinate) {
+  let opposite;
+  let adjacent;
+  if (targetCoordinate.x > currentCoordinate.x) {
+    opposite = Math.abs(targetCoordinate.x - currentCoordinate.x);
+    adjacent = Math.abs(targetCoordinate.y - currentCoordinate.y);
+  } else {
+    opposite = Math.abs(targetCoordinate.y - currentCoordinate.y);
+    adjacent = Math.abs(targetCoordinate.x - currentCoordinate.x);
+  }
+  let radian = Math.atan(opposite / adjacent);
+  return radian * 180 / Math.PI;
+}
+
+function getDegree(yOrigin, yDestination) {
+  if (yDestination > yOrigin) {
+    return 90;
+  }
+  return 180;
+}
+
+function getSign(x, xCoordinates) {
+  return isDisplacementBendRight(xCoordinates.x1, xCoordinates.x2)
+    ? x * 1
+    : x * -1;
+}
+
+function isDisplacementBendRight(xOrigin, xDestination) {
+  return xDestination > xOrigin;
 }
 
 let styles = StyleSheet.create({
@@ -208,7 +265,6 @@ let styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: ORANGE,
   },
   header: {
     position: 'absolute',
@@ -240,7 +296,7 @@ let styles = StyleSheet.create({
   },
   distance: {
     padding: 5,
-    backgroundColor: 'rgba(0,0,0,0.2)',
+    backgroundColor: 'rgba(12,12,125,0.7)',
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
