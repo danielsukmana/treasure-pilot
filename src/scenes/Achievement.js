@@ -111,7 +111,7 @@ export default connect(mapStateToProps)(Achievement);
 let styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: ORANGE,
+    backgroundColor: WHITE,
   },
   header: {
     flex: 1,
@@ -136,12 +136,14 @@ let styles = StyleSheet.create({
   subtitle: {
     color: WHITE,
     fontSize: 20,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: '#607D8B',
     borderTopRightRadius: 5,
     borderTopLeftRadius: 5,
     padding: 10,
   },
   question: {
+    backgroundColor: '#CFD8DC',
+    color: '#37474F',
     padding: 10,
     fontSize: 16,
     color: 'grey',

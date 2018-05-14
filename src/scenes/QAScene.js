@@ -11,7 +11,7 @@ import {
 import {NavigationActions} from 'react-navigation';
 import {connect} from 'react-redux';
 
-import {LIGHT_BLUE, ORANGE, WHITE} from '../general/colors';
+import {LIGHT_BLUE, WHITE, GREY} from '../general/colors';
 import getStatusBarHeight from '../helpers/getStatusBarHeight';
 import {qaList} from '../data/q&a';
 import CheckItem from '../general/core-ui/CheckItem';
@@ -164,7 +164,7 @@ let styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: ORANGE,
+    backgroundColor: WHITE,
   },
   header: {
     flex: 1,
@@ -184,24 +184,25 @@ let styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 10,
     borderRadius: 5,
-    backgroundColor: WHITE,
+    backgroundColor: '#CFD8DC',
   },
   subtitle: {
     color: WHITE,
     fontSize: 20,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: '#607D8B',
     borderTopRightRadius: 5,
     borderTopLeftRadius: 5,
     padding: 10,
   },
   desc: {
-    color: 'grey',
+    color: '#37474F',
     fontSize: 16,
     borderTopRightRadius: 5,
     borderTopLeftRadius: 5,
     padding: 5,
   },
   answer: {
+    backgroundColor: '#CFD8DC',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
