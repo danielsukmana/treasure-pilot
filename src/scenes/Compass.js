@@ -11,12 +11,14 @@ import {
   TouchableOpacity,
   View,
   Alert,
+  Modal,
 } from 'react-native';
 import {createStackNavigator, createBottomTabNavigator} from 'react-navigation';
 import Expo, {Constants, Location, Permissions} from 'expo';
 import {Ionicons} from '@expo/vector-icons';
-import {LIGHT_BLUE, ORANGE, WHITE} from '../general/colors';
+import {LIGHT_BLUE, ORANGE, WHITE, TRANSPARENT} from '../general/colors';
 import getStatusBarHeight from '../helpers/getStatusBarHeight';
+import getIconPre from '../helpers/getIconPre';
 
 type Props = {
   navigation: Navigation,
@@ -39,6 +41,8 @@ type State = {
     y: '',
   },
   heading: '',
+  isCompassActive: boolean,
+  isHintVisible: boolean,
 };
 export default class Compass extends PureComponent<Props, State> {
   constructor() {
@@ -56,6 +60,7 @@ export default class Compass extends PureComponent<Props, State> {
       isCompassActive: false,
       isNeddleActive: true,
       vector: null,
+      isHintVisible: false,
     };
   }
 
@@ -79,6 +84,7 @@ export default class Compass extends PureComponent<Props, State> {
       vector,
       isCompassActive,
       isNeddleActive,
+      isHintVisible,
     } = this.state;
     let theta = 0;
     if (vector) {
@@ -98,21 +104,39 @@ export default class Compass extends PureComponent<Props, State> {
 
     return (
       <View style={styles.container}>
+        <Modal
+          transparent
+          visible={isHintVisible}
+          animationType="fade"
+          onRequestClose={() => this.setState({isHintVisible: false})}
+        >
+          <View style={styles.hintModal}>
+            <TouchableOpacity
+              hitSlop={{top: 5, right: 5, bottom: 5, left: 5}}
+              onPress={() => this.setState({isHintVisible: false})}
+            >
+              <Ionicons
+                name={`${getIconPre()}-close`}
+                size={25}
+                color={WHITE}
+              />
+            </TouchableOpacity>
+            <View style={{flex: 1}}>
+              <Image />
+              <Text />
+            </View>
+          </View>
+        </Modal>
         <View style={styles.header}>
+          <View style={styles.trophy} />
+          <Text style={styles.title}>Treasure Pilot</Text>
           <TouchableOpacity
             style={styles.trophy}
+            hitSlop={{top: 5, right: 5, bottom: 5, left: 5}}
             onPress={() => navigation.navigate('Achievement')}
           >
-            <Image
-              source={require('../assets/trophy.png')}
-              style={{
-                width: 36,
-                height: 36,
-              }}
-              resizeMode="contain"
-            />
+            <Ionicons name={`${getIconPre()}-trophy`} size={30} color={WHITE} />
           </TouchableOpacity>
-          <Text style={styles.title}>Treasure Pilot</Text>
         </View>
         {isCompassActive ? (
           <ImageBackground
@@ -153,19 +177,33 @@ export default class Compass extends PureComponent<Props, State> {
           </Text>
         </TouchableOpacity>
         <View style={styles.distance}>
-          <View style={{flex: 1}}>
-            <Text
-              style={{
-                color: WHITE,
-                fontSize: 40,
-                fontWeight: '500',
-              }}
-            >
-              10
-            </Text>
-            <Text style={{color: WHITE, fontSize: 20, fontWeight: '300'}}>
-              METER
-            </Text>
+          <View style={{alignSelf: 'center'}}>
+            <View style={{flexDirection: 'row'}}>
+              <View style={{width: 28, height: 28}} />
+              <View style={{alignItems: 'center'}}>
+                <Text style={styles.distanceValue}>10</Text>
+                <Text style={styles.meter}>METER</Text>
+              </View>
+              <TouchableOpacity
+                hitSlop={{top: 5, right: 5, bottom: 5, left: 5}}
+                onPress={() => this.setState({isHintVisible: true})}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderColor: WHITE,
+                  borderWidth: 1,
+                  borderRadius: 14,
+                  width: 28,
+                  height: 28,
+                }}
+              >
+                <Ionicons
+                  name={`${getIconPre()}-help`}
+                  size={20}
+                  color={WHITE}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>
@@ -265,28 +303,27 @@ let styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: WHITE,
   },
   header: {
     position: 'absolute',
-    top: getStatusBarHeight(),
+    top: 0,
     backgroundColor: LIGHT_BLUE,
     width: '100%',
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     padding: 10,
-    zIndex: 0,
+    paddingTop: getStatusBarHeight() + 10,
   },
   trophy: {
-    position: 'absolute',
-    top: 5,
-    right: 5,
-    borderColor: WHITE,
-    borderRadius: 18,
-    overflow: 'hidden',
+    width: 36,
+    height: 36,
   },
   title: {
     fontSize: 20,
     color: WHITE,
+    flex: 1,
+    textAlign: 'center',
   },
   background: {
     flex: 1,
@@ -297,13 +334,9 @@ let styles = StyleSheet.create({
   distance: {
     padding: 5,
     backgroundColor: 'rgba(12,12,125,0.7)',
-    alignItems: 'center',
-    justifyContent: 'center',
     width: '100%',
     position: 'absolute',
     bottom: 0,
-    borderTopRightRadius: 5,
-    borderTopLeftRadius: 5,
   },
   button: {
     borderRadius: 5,
@@ -321,5 +354,17 @@ let styles = StyleSheet.create({
     borderTopRightRadius: 5,
     borderTopLeftRadius: 5,
     padding: 10,
+  },
+  distanceValue: {
+    color: WHITE,
+    fontSize: 40,
+    fontWeight: '500',
+  },
+  meter: {color: WHITE, fontSize: 20, fontWeight: '300'},
+  hintModal: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    flex: 1,
+    padding: 20,
+    paddingTop: Platform.OS === 'ios' ? 20 + getStatusBarHeight() : 20,
   },
 });
