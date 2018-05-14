@@ -61,7 +61,7 @@ export const qaList: Array<QA> = [
     locationHint: locationHint2,
     coor: {
       lat: 6.123123123,
-      long: -124.7878798,
+      long: -123.7878798,
     },
     question:
       'Manakah komponen dari React Native yang dapat digunakan untuk membuat sebuah Button?',

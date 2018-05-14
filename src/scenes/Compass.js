@@ -20,9 +20,16 @@ import {LIGHT_BLUE, ORANGE, WHITE, TRANSPARENT} from '../general/colors';
 import getStatusBarHeight from '../helpers/getStatusBarHeight';
 import getIconPre from '../helpers/getIconPre';
 import calculateDistance from '../helpers/calculateDistance';
+import {connect} from 'react-redux';
+
+import type {RootState} from '../reducers';
 
 type Props = {
   navigation: Navigation,
+  targetCoordinate: {
+    x: string,
+    y: string,
+  },
 };
 
 type State = {
@@ -33,10 +40,7 @@ type State = {
     y: number,
     z: number,
   },
-  targetCoordinate: {
-    x: string,
-    y: string,
-  },
+
   currentCoordinate: {
     x: '',
     y: '',
@@ -45,14 +49,10 @@ type State = {
   isCompassActive: boolean,
   isHintVisible: boolean,
 };
-export default class Compass extends PureComponent<Props, State> {
+class Compass extends PureComponent<Props, State> {
   constructor() {
     super(...arguments);
     this.state = {
-      targetCoordinate: {
-        x: '-6.257188',
-        y: '106.619114',
-      },
       currentCoordinate: {
         x: '',
         y: '',
@@ -77,10 +77,9 @@ export default class Compass extends PureComponent<Props, State> {
   }
 
   render() {
-    let {navigation} = this.props;
+    let {navigation, targetCoordinate} = this.props;
     let {
       currentCoordinate,
-      targetCoordinate,
       heading,
       vector,
       isCompassActive,
@@ -249,6 +248,20 @@ export default class Compass extends PureComponent<Props, State> {
     );
   };
 }
+const mapStateToProps = (state: RootState) => {
+  let {qaList, currentAchievement} = state.qa;
+  if (currentAchievement == null) {
+    index = 0;
+  } else {
+    index = currentAchievement + 1;
+  }
+  let coordinates = qaList[index].coor;
+  return {
+    targetCoordinate: {x: coordinates.lat, y: coordinates.long},
+  };
+};
+
+export default connect(mapStateToProps, null)(Compass);
 
 function calculateDegree(currentCoordinate, targetCoordinate, heading: number) {
   return (

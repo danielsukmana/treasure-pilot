@@ -43,7 +43,7 @@ class QAScene extends Component<Props, State> {
           <Text style={styles.title}>Question & Answer</Text>
         </View>
         <ScrollView>
-          {currentAchievement === 0 ? this._renderFinish() : this._renderQA(qa)}
+          {currentAchievement === 3 ? this._renderFinish() : this._renderQA(qa)}
         </ScrollView>
       </View>
     );
