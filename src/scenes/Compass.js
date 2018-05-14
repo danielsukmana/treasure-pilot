@@ -34,6 +34,7 @@ type State = {
     lon: number,
   },
   deviceHeading: number,
+  isCompassActive: boolean,
 };
 export default class Compass extends PureComponent<Props, State> {
   _positionListener: ?{remove: () => void};
@@ -46,6 +47,7 @@ export default class Compass extends PureComponent<Props, State> {
       vector: null,
       deviceCoordinate: null,
       deviceHeading: 0,
+      isCompassActive: false,
     };
   }
 
@@ -123,11 +125,11 @@ export default class Compass extends PureComponent<Props, State> {
 
   render() {
     let {navigation} = this.props;
-    let {vector} = this.state;
+    let {vector, isCompassActive} = this.state;
     let theta = 0;
     if (vector) {
       let {x, y, z} = vector;
-      theta = Math.atan(x / y);
+      theta = Math.atan(-x / y);
       if (-x > 0 && y > 0) {
         theta = theta;
       } else if (y > 0) {
@@ -154,15 +156,25 @@ export default class Compass extends PureComponent<Props, State> {
           </TouchableOpacity>
           <Text style={styles.title}>Treasure Pilot</Text>
         </View>
-        <ImageBackground
-          source={require('../assets/compass.png')}
-          style={{
-            width: 300,
-            height: 300,
-            transform: [{rotate: `${theta}rad`}],
-          }}
-          resizeMode="contain"
-        />
+        {isCompassActive ? (
+          <ImageBackground
+            source={require('../assets/compass.png')}
+            style={{
+              width: 300,
+              height: 300,
+              transform: [{rotate: `${theta}rad`}],
+            }}
+            resizeMode="contain"
+          />
+        ) : null}
+        <TouchableOpacity
+          onPress={() => this._onCompassActive()}
+          style={styles.button}
+        >
+          <Text style={styles.text}>
+            {isCompassActive ? `Matikan Kompas` : `Aktifkan Kompas`}
+          </Text>
+        </TouchableOpacity>
         <View style={styles.distance}>
           <View style={{flex: 1}}>
             <Text
@@ -181,6 +193,11 @@ export default class Compass extends PureComponent<Props, State> {
         </View>
       </View>
     );
+  }
+
+  _onCompassActive() {
+    let {isCompassActive} = this.state;
+    this.setState({isCompassActive: !isCompassActive});
   }
 }
 
@@ -229,5 +246,22 @@ let styles = StyleSheet.create({
     bottom: 0,
     borderTopRightRadius: 5,
     borderTopLeftRadius: 5,
+  },
+  button: {
+    borderRadius: 5,
+    backgroundColor: LIGHT_BLUE,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 10,
+    padding: 5,
+    position: 'absolute',
+    bottom: 100,
+  },
+  text: {
+    color: WHITE,
+    fontSize: 16,
+    borderTopRightRadius: 5,
+    borderTopLeftRadius: 5,
+    padding: 10,
   },
 });
