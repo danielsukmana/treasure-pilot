@@ -1,10 +1,20 @@
 // @flow
 
 import React, {Component} from 'react';
-import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from 'react-native';
 import {connect} from 'react-redux';
+import {Ionicons} from '@expo/vector-icons';
 import {ORANGE, LIGHT_BLUE, WHITE} from '../general/colors';
+import Header from '../general/core-ui/Header';
 import getStatusBarHeight from '../helpers/getStatusBarHeight';
+import getIconPre from '../helpers/getIconPre';
 
 import type {RootState} from '../reducers';
 import type {QA} from '../data/q&a';
@@ -24,14 +34,10 @@ class Achievement extends Component<Props, State> {
   state = {
     achievements: [],
   };
-  componentDidMount() {
-    let {navigation} = this.props;
-    let {achievements} = this.state;
-  }
 
   render() {
     let {achievements} = this.state;
-    let {qaList, succeedList} = this.props;
+    let {qaList, succeedList, navigation} = this.props;
     let cards = <View />;
     if (succeedList) {
       cards = succeedList.map((item, index) => (
@@ -41,12 +47,28 @@ class Achievement extends Component<Props, State> {
 
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Pencapaian</Text>
-        </View>
-        <ScrollView contentContainerStyle={{margin: 5, flex: 1}}>
-          {cards}
-        </ScrollView>
+        <Header
+          title="Pencapaian"
+          leftIcon={
+            <Ionicons
+              name={`${getIconPre()}-arrow-back`}
+              size={30}
+              color={WHITE}
+            />
+          }
+          onLeftIconPress={() => navigation.goBack()}
+        />
+        {cards.length > 0 ? (
+          <ScrollView contentContainerStyle={{margin: 5, flex: 1}}>
+            {cards}
+          </ScrollView>
+        ) : (
+          <View style={styles.empty}>
+            <Text style={styles.emptyText}>
+              Ayo cari dan temukan kode QR untuk mendapatkan achievement!
+            </Text>
+          </View>
+        )}
       </View>
     );
   }
@@ -114,18 +136,24 @@ let styles = StyleSheet.create({
     backgroundColor: WHITE,
   },
   header: {
-    flex: 1,
     paddingTop: getStatusBarHeight(),
-    maxHeight: 70,
+    height: 80,
     backgroundColor: LIGHT_BLUE,
     width: '100%',
     alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: 'row',
     padding: 10,
+    paddingTop: getStatusBarHeight() + 10,
+  },
+  back: {
+    width: 36,
+    height: 36,
   },
   title: {
+    flex: 1,
     fontSize: 20,
     color: WHITE,
+    textAlign: 'center',
   },
   wrapper: {
     width: '90%',
@@ -148,5 +176,13 @@ let styles = StyleSheet.create({
     fontSize: 16,
     color: 'grey',
     marginBottom: 5,
+  },
+  empty: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  emptyText: {
+    padding: 20,
+    textAlign: 'center',
   },
 });

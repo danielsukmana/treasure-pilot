@@ -18,6 +18,7 @@ import {LIGHT_BLUE, WHITE, GREY} from '../general/colors';
 import getStatusBarHeight from '../helpers/getStatusBarHeight';
 import {qaList} from '../data/q&a';
 import CheckItem from '../general/core-ui/CheckItem';
+import Header from '../general/core-ui/Header';
 import type {RootState} from '../reducers';
 
 type Props = {
@@ -39,9 +40,7 @@ class QAScene extends Component<Props, State> {
     let qa = qaList[currentAchievement || 0];
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Question & Answer</Text>
-        </View>
+        <Header title="Question & Answer" />
         <ScrollView>
           {currentAchievement === 3 ? this._renderFinish() : this._renderQA(qa)}
         </ScrollView>

@@ -17,6 +17,7 @@ import {createStackNavigator, createBottomTabNavigator} from 'react-navigation';
 import Expo, {Constants, Location, Permissions} from 'expo';
 import {Ionicons} from '@expo/vector-icons';
 import {LIGHT_BLUE, ORANGE, WHITE, TRANSPARENT} from '../general/colors';
+import Header from '../general/core-ui/Header';
 import getStatusBarHeight from '../helpers/getStatusBarHeight';
 import getIconPre from '../helpers/getIconPre';
 import calculateDistance from '../helpers/calculateDistance';
@@ -124,47 +125,45 @@ class Compass extends PureComponent<Props, State> {
             </View>
           </View>
         </Modal>
-        <View style={styles.header}>
-          <View style={styles.trophy} />
-          <Text style={styles.title}>Treasure Pilot</Text>
-          <TouchableOpacity
-            style={styles.trophy}
-            hitSlop={{top: 5, right: 5, bottom: 5, left: 5}}
-            onPress={() => navigation.navigate('Achievement')}
-          >
+        <Header
+          title="Treasure Pilot"
+          rightIcon={
             <Ionicons name={`${getIconPre()}-trophy`} size={30} color={WHITE} />
-          </TouchableOpacity>
+          }
+          onRightIconPress={() => navigation.navigate('Achievement')}
+        />
+        <View style={{flex: 1, justifyContent: 'center'}}>
+          {isCompassActive ? (
+            <ImageBackground
+              source={require('../assets/compass.png')}
+              style={{
+                width: 300,
+                height: 300,
+                transform: [{rotate: `${theta}rad`}],
+              }}
+              resizeMode="contain"
+            />
+          ) : (
+            <Image
+              source={require('../assets/arrow.png')}
+              style={{
+                width: 200,
+                height: 200,
+                transform: [
+                  {
+                    rotateZ:
+                      calculateDegree(
+                        currentCoordinate,
+                        targetCoordinate,
+                        heading,
+                      ) + 'deg',
+                  },
+                ],
+              }}
+              resizeMode="contain"
+            />
+          )}
         </View>
-        {isCompassActive ? (
-          <ImageBackground
-            source={require('../assets/compass.png')}
-            style={{
-              width: 300,
-              height: 300,
-              transform: [{rotate: `${theta}rad`}],
-            }}
-            resizeMode="contain"
-          />
-        ) : (
-          <Image
-            source={require('../assets/arrow.png')}
-            style={{
-              width: 200,
-              height: 200,
-              transform: [
-                {
-                  rotateZ:
-                    calculateDegree(
-                      currentCoordinate,
-                      targetCoordinate,
-                      heading,
-                    ) + 'deg',
-                },
-              ],
-            }}
-            resizeMode="contain"
-          />
-        )}
         <TouchableOpacity
           onPress={() => this._onCompassActive()}
           style={styles.button}
@@ -323,52 +322,21 @@ function isDisplacementBendRight(xOrigin, xDestination) {
 let styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: WHITE,
-  },
-  header: {
-    position: 'absolute',
-    top: 0,
-    backgroundColor: LIGHT_BLUE,
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    paddingTop: getStatusBarHeight() + 10,
-  },
-  trophy: {
-    width: 36,
-    height: 36,
-  },
-  title: {
-    fontSize: 20,
-    color: WHITE,
-    flex: 1,
-    textAlign: 'center',
-  },
-  background: {
-    flex: 1,
-    alignSelf: 'stretch',
-    width: null,
-    margin: 40,
   },
   distance: {
     padding: 5,
     backgroundColor: 'rgba(12,12,125,0.7)',
     width: '100%',
-    position: 'absolute',
-    bottom: 0,
   },
   button: {
     borderRadius: 5,
     backgroundColor: LIGHT_BLUE,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 10,
+    margin: 20,
     padding: 5,
-    position: 'absolute',
-    bottom: 100,
   },
   text: {
     color: WHITE,
