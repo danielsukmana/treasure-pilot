@@ -111,25 +111,5 @@ export const qaList: Array<QA> = [
       lat: 6.7878799,
       long: -124.7878798,
     },
-    question:
-      'Manakah salah satu perintah style untuk membuat bentuk garis menjadi bundar ?',
-    answers: [
-      {
-        value: 'BackgroundColor',
-        isCorrect: false,
-      },
-      {
-        value: 'borderRadius',
-        isCorrect: true,
-      },
-      {
-        value: 'borderColor',
-        isCorrect: false,
-      },
-      {
-        value: 'roundedBorder',
-        isCorrect: false,
-      },
-    ],
   },
 ];

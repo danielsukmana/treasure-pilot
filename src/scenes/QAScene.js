@@ -39,20 +39,33 @@ class QAScene extends Component<Props, State> {
         <View style={styles.header}>
           <Text style={styles.title}>Question & Answer</Text>
         </View>
-        <ScrollView style={{marginTop: 40}}>
-          {this._renderQuestion(qa)}
-          {this._renderAnswers(qa)}
-          <TouchableOpacity
-            onPress={() => this._onSubmit()}
-            style={styles.submit}
-          >
-            <Text style={[styles.desc, {color: WHITE}]}>GO !!!</Text>
-          </TouchableOpacity>
+        <ScrollView>
+          {currentAchievement === 3 ? this._renderFinish() : this._renderQA(qa)}
         </ScrollView>
       </View>
     );
   }
-
+  _renderFinish() {
+    return (
+      <View>
+        <Text>BERHASIL !!</Text>
+      </View>
+    );
+  }
+  _renderQA(qa) {
+    return (
+      <View>
+        {this._renderQuestion(qa)}
+        {this._renderAnswers(qa)}
+        <TouchableOpacity
+          onPress={() => this._onSubmit()}
+          style={styles.submit}
+        >
+          <Text style={[styles.desc, {color: WHITE}]}>Jawab Pertanyaan</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
   _renderQuestion(qa: Object) {
     return (
       <View style={styles.question}>
@@ -186,7 +199,7 @@ let styles = StyleSheet.create({
     fontSize: 16,
     borderTopRightRadius: 5,
     borderTopLeftRadius: 5,
-    padding: 10,
+    padding: 5,
   },
   answer: {
     flexDirection: 'row',
@@ -199,8 +212,7 @@ let styles = StyleSheet.create({
     backgroundColor: LIGHT_BLUE,
     justifyContent: 'center',
     alignItems: 'center',
-    flex: 1,
-    margin: 10,
-    padding: 10,
+    margin: 5,
+    padding: 5,
   },
 });

@@ -88,7 +88,7 @@ class Scanner extends Component<Props, State> {
       alert('Anda belum menjawab pertanyaan sebelumnya');
       return;
     }
-    if (QRData.type === 'qa') {
+    if (QRData.type === 'qa' || QRData.type === 'finish') {
       saveQRData(QRData);
       navigation.navigate('QACard');
       this.setState({hasCameraPermission: false});
