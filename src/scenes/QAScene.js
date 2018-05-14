@@ -89,12 +89,12 @@ class QAScene extends Component<Props, State> {
     let {value} = this.state;
     let qa = qaList[currentAchievement || 0];
     let isCorrect = false;
-    if (value) {
-      isCorrect = qa.answers[value].isCorrect;
-    }
     if (value === null) {
       alert('Anda harus mengilih satu jawaban!');
-    } else if (!isCorrect) {
+      return;
+    }
+    isCorrect = qa.answers[value].isCorrect;
+    if (!isCorrect) {
       alert('Jawaban Anda salah. Coba lagi.');
     } else {
       getSuccessAnswer(currentAchievement);
