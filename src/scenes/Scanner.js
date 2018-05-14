@@ -16,6 +16,7 @@ type QRData = {
 type Props = {
   navigation: Navigation,
   saveQRData: (QRData) => void,
+  lastAnsweredAchievement: number,
 };
 
 type State = {
@@ -26,6 +27,7 @@ class Scanner extends Component<Props, State> {
   state = {
     hasCameraPermission: false,
     data: null,
+    isScanning: true,
   };
 
   async componentWillMount() {
@@ -34,7 +36,7 @@ class Scanner extends Component<Props, State> {
   }
 
   render() {
-    const {hasCameraPermission} = this.state;
+    const {hasCameraPermission, isScanning} = this.state;
 
     if (hasCameraPermission === null) {
       return (
@@ -54,6 +56,18 @@ class Scanner extends Component<Props, State> {
           </TouchableOpacity>
         </View>
       );
+    } else if (!isScanning) {
+      return (
+        <View style={styles.container}>
+          <Text style={styles.text}>Scan QR code sesuai urutannya !!</Text>
+          <TouchableOpacity
+            onPress={() => this.setState({isScanning: true})}
+            style={styles.button}
+          >
+            <Text style={{color: WHITE, fontSize: 16}}>Scan another QR</Text>
+          </TouchableOpacity>
+        </View>
+      );
     } else {
       return (
         <View style={{flex: 1}}>
@@ -67,8 +81,15 @@ class Scanner extends Component<Props, State> {
   }
 
   _handleBarCodeRead = ({data}) => {
-    let {navigation, saveQRData} = this.props;
+    let {navigation, saveQRData, lastAnsweredAchievement} = this.props;
     let QRData = JSON.parse(data);
+    console.log(QRData.id);
+    console.log(lastAnsweredAchievement);
+    if (lastAnsweredAchievement + 1 != QRData.id) {
+      this.setState({isScanning: false});
+      alert('Anda belum menjawab pertanyaan sebelumnya');
+      return;
+    }
     if (QRData.type === 'qa') {
       saveQRData(QRData);
       navigation.navigate('QACard');
@@ -76,6 +97,13 @@ class Scanner extends Component<Props, State> {
     }
   };
 }
+
+const mapStateToProps = (state: RootState) => {
+  console.log('MSP ', state.qa);
+  return {
+    lastAnsweredAchievement: state.qa.succeedList.length,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -90,7 +118,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(Scanner);
+export default connect(mapStateToProps, mapDispatchToProps)(Scanner);
 let styles = StyleSheet.create({
   container: {
     flex: 1,

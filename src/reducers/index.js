@@ -2,7 +2,7 @@
 
 import {combineReducers} from 'redux';
 import qaReducer from './qa-reducer';
-import type {QAState} from '../reducers/qa-reducer';
+import type {QAState} from './qa-reducer';
 
 export default combineReducers({
   qa: qaReducer,
