@@ -28,11 +28,11 @@ export type QA = {
 export const qaList: Array<QA> = [
   {
     id: 1,
-    hint: 'Air Terjun UMN',
+    hint: 'Presiden Direktur Kompas-Gramedia Group',
     hintImage: hintImage1,
     coor: {
-      lat: 6.123123123,
-      long: -124.2313124,
+      lat: -6.2578275,
+      long: 106.6187545,
     },
     question:
       'Apakah perintah untuk membuat inital project bernama uangku menggunakan create-react-native-app ?',
@@ -57,11 +57,11 @@ export const qaList: Array<QA> = [
   },
   {
     id: 2,
-    hint: 'Taman Parkir Utara UMN',
+    hint: 'Drop off gedung D',
     hintImage: hintImage2,
     coor: {
-      lat: 6.123123123,
-      long: -123.7878798,
+      lat: -6.2579458,
+      long: 106.6190727,
     },
     question:
       'Manakah komponen dari React Native yang dapat digunakan untuk membuat sebuah Button?',
@@ -86,11 +86,11 @@ export const qaList: Array<QA> = [
   },
   {
     id: 3,
-    hint: 'Kantin UMN',
+    hint: 'Tiang',
     hintImage: hintImage3,
     coor: {
-      lat: 6.7878799,
-      long: -124.7878798,
+      lat: -6.2577975,
+      long: 106.6187615,
     },
     question:
       'Untuk membuat suatu komponen di React Native maka kita memerlukan modul utama yang disebut ...',
@@ -115,11 +115,11 @@ export const qaList: Array<QA> = [
   },
   {
     id: 4,
-    hint: 'Toilet Lantai 2',
+    hint: 'Keamanan',
     hintImage: hintImage4,
     coor: {
-      lat: 6.7878799,
-      long: -124.7878798,
+      lat: -6.2574726,
+      long: 106.6185114,
     },
   },
 ];
