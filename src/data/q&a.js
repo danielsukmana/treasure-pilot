@@ -1,9 +1,9 @@
 // @flow
 
-import locationHint1 from '../assets/locationHint1.jpeg';
-import locationHint2 from '../assets/locationHint2.jpeg';
-import locationHint3 from '../assets/locationHint3.jpeg';
-import locationHint4 from '../assets/locationHint4.jpeg';
+import hintImage1 from '../assets/locationHint1.jpeg';
+import hintImage2 from '../assets/locationHint2.jpeg';
+import hintImage3 from '../assets/locationHint3.jpeg';
+import hintImage4 from '../assets/locationHint4.jpeg';
 
 type Answer = [
   {
@@ -15,7 +15,7 @@ type Answer = [
 export type QA = {
   id: number,
   hint: string,
-  locationHint: ImageSource,
+  hintImage: ImageSource,
   coor: {
     lat: number,
     long: number,
@@ -29,7 +29,7 @@ export const qaList: Array<QA> = [
   {
     id: 1,
     hint: 'Air Terjun UMN',
-    locationHint: locationHint1,
+    hintImage: hintImage1,
     coor: {
       lat: 6.123123123,
       long: -124.2313124,
@@ -58,7 +58,7 @@ export const qaList: Array<QA> = [
   {
     id: 2,
     hint: 'Taman Parkir Utara UMN',
-    locationHint: locationHint2,
+    hintImage: hintImage2,
     coor: {
       lat: 6.123123123,
       long: -123.7878798,
@@ -87,7 +87,7 @@ export const qaList: Array<QA> = [
   {
     id: 3,
     hint: 'Kantin UMN',
-    locationHint: locationHint3,
+    hintImage: hintImage3,
     coor: {
       lat: 6.7878799,
       long: -124.7878798,
@@ -116,7 +116,7 @@ export const qaList: Array<QA> = [
   {
     id: 4,
     hint: 'Toilet Lantai 2',
-    locationHint: locationHint4,
+    hintImage: hintImage4,
     coor: {
       lat: 6.7878799,
       long: -124.7878798,

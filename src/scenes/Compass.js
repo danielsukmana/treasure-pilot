@@ -1,6 +1,6 @@
 //@flow
 
-import React, {PureComponent} from 'react';
+import React, {Component} from 'react';
 import {
   Image,
   ImageBackground,
@@ -31,6 +31,8 @@ type Props = {
     x: string,
     y: string,
   },
+  hint: string,
+  hintImage: ImageSource,
 };
 
 type State = {
@@ -41,24 +43,23 @@ type State = {
     y: number,
     z: number,
   },
-
   currentCoordinate: {
-    x: '',
-    y: '',
+    x: number,
+    y: number,
   },
-  heading: '',
+  heading: number,
   isCompassActive: boolean,
   isHintVisible: boolean,
 };
-class Compass extends PureComponent<Props, State> {
+class Compass extends Component<Props, State> {
   constructor() {
     super(...arguments);
     this.state = {
       currentCoordinate: {
-        x: '',
-        y: '',
+        x: 0,
+        y: 0,
       },
-      heading: '',
+      heading: 0,
       isCompassActive: false,
       isNeddleActive: true,
       vector: null,
@@ -78,7 +79,7 @@ class Compass extends PureComponent<Props, State> {
   }
 
   render() {
-    let {navigation, targetCoordinate} = this.props;
+    let {navigation, targetCoordinate, hint, hintImage} = this.props;
     let {
       currentCoordinate,
       heading,
@@ -90,7 +91,7 @@ class Compass extends PureComponent<Props, State> {
     let theta = 0;
     if (vector) {
       let {x, y, z} = vector;
-      theta = Math.atan(-x / y);
+      theta = Math.atan(x / y);
       if (-x > 0 && y > 0) {
         theta = theta;
       } else if (y > 0) {
@@ -120,8 +121,13 @@ class Compass extends PureComponent<Props, State> {
               />
             </TouchableOpacity>
             <View style={{flex: 1}}>
-              <Image />
-              <Text />
+              <Image
+                source={hintImage}
+                style={{width: '100%', height: '70%', marginVertical: 20}}
+                resizeMode="contain"
+                resizeMethod="resize"
+              />
+              <Text style={styles.hintText}>{hint}</Text>
             </View>
           </View>
         </Modal>
@@ -199,9 +205,11 @@ class Compass extends PureComponent<Props, State> {
                   justifyContent: 'center',
                   borderColor: WHITE,
                   borderWidth: 1,
-                  borderRadius: 14,
-                  width: 28,
-                  height: 28,
+                  borderRadius: 12,
+                  width: 24,
+                  height: 24,
+                  marginTop: 5,
+                  marginLeft: 10,
                 }}
               >
                 <Ionicons
@@ -247,6 +255,7 @@ class Compass extends PureComponent<Props, State> {
     );
   };
 }
+
 const mapStateToProps = (state: RootState) => {
   let {qaList, currentAchievement} = state.qa;
   if (currentAchievement == null) {
@@ -257,6 +266,8 @@ const mapStateToProps = (state: RootState) => {
   let coordinates = qaList[index].coor;
   return {
     targetCoordinate: {x: coordinates.lat, y: coordinates.long},
+    hint: qaList[index].hint,
+    hintImage: qaList[index].hintImage,
   };
 };
 
@@ -352,9 +363,15 @@ let styles = StyleSheet.create({
   },
   meter: {color: WHITE, fontSize: 20, fontWeight: '300'},
   hintModal: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
     flex: 1,
     padding: 20,
     paddingTop: Platform.OS === 'ios' ? 20 + getStatusBarHeight() : 20,
+  },
+  hintText: {
+    color: WHITE,
+    fontSize: 20,
+    width: '100%',
+    textAlign: 'center',
   },
 });
