@@ -41,15 +41,18 @@ class Scanner extends Component<Props, State> {
     if (hasCameraPermission === null) {
       return (
         <View style={styles.container}>
-          <Text style={styles.text}>Requesting for camera permission</Text>
+          <Text style={styles.text}>Meminta izin untuk mengakses kamera</Text>
         </View>
       );
     } else if (hasCameraPermission === false) {
       return (
         <View style={styles.container}>
-          <Text style={styles.text}>No access to camera</Text>
+          <Text style={styles.text}>Tidak memiliki akses ke kamera</Text>
           <TouchableOpacity
-            onPress={() => this.setState({hasCameraPermission: true})}
+            onPress={async () => {
+              const {status} = await Permissions.askAsync(Permissions.CAMERA);
+              this.setState({hasCameraPermission: status === 'granted'});
+            }}
             style={styles.button}
           >
             <Text style={{color: WHITE, fontSize: 16}}>Aktifkan Kamera</Text>
@@ -59,12 +62,12 @@ class Scanner extends Component<Props, State> {
     } else if (!isScanning) {
       return (
         <View style={styles.container}>
-          <Text style={styles.text}>Scan QR code sesuai urutannya !!</Text>
+          <Text style={styles.text}>Ups! QR code tidak sesuai urutan.</Text>
           <TouchableOpacity
             onPress={() => this.setState({isScanning: true})}
             style={styles.button}
           >
-            <Text style={{color: WHITE, fontSize: 16}}>Scan another QR</Text>
+            <Text style={{color: WHITE, fontSize: 16}}>Scan Lagi</Text>
           </TouchableOpacity>
         </View>
       );

@@ -48,7 +48,7 @@ class Achievement extends Component<Props, State> {
     return (
       <View style={styles.container}>
         <Header
-          title="Pencapaian"
+          title="Achievements"
           leftIcon={
             <Ionicons
               name={`${getIconPre()}-arrow-back`}
