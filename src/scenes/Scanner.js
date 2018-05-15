@@ -47,7 +47,9 @@ class Scanner extends Component<Props, State> {
     } else if (hasCameraPermission === false) {
       return (
         <View style={styles.container}>
-          <Text style={styles.text}>Tidak memiliki akses ke kamera</Text>
+          <Text style={styles.text}>
+            Tidak memiliki izin untuk mengakses kamera
+          </Text>
           <TouchableOpacity
             onPress={async () => {
               const {status} = await Permissions.askAsync(Permissions.CAMERA);

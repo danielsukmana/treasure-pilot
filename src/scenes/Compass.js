@@ -50,6 +50,7 @@ type State = {
   heading: number,
   isCompassActive: boolean,
   isHintVisible: boolean,
+  hasLocationAccess: boolean,
 };
 class Compass extends Component<Props, State> {
   constructor() {
@@ -64,6 +65,7 @@ class Compass extends Component<Props, State> {
       isNeddleActive: true,
       vector: null,
       isHintVisible: false,
+      hasLocationAccess: false,
     };
   }
 
@@ -87,6 +89,7 @@ class Compass extends Component<Props, State> {
       isCompassActive,
       isNeddleActive,
       isHintVisible,
+      hasLocationAccess,
     } = this.state;
     let theta = 0;
     if (vector) {
@@ -138,38 +141,57 @@ class Compass extends Component<Props, State> {
           }
           onRightIconPress={() => navigation.navigate('Achievement')}
         />
-        <View style={{flex: 1, justifyContent: 'center'}}>
-          {isCompassActive ? (
-            <ImageBackground
-              source={require('../assets/compass.png')}
-              style={{
-                width: 300,
-                height: 300,
-                transform: [{rotate: `${theta}rad`}],
+        {hasLocationAccess ? (
+          <View style={{flex: 1, justifyContent: 'center'}}>
+            {isCompassActive ? (
+              <ImageBackground
+                source={require('../assets/compass.png')}
+                style={{
+                  width: 300,
+                  height: 300,
+                  transform: [{rotate: `${theta}rad`}],
+                }}
+                resizeMode="contain"
+              />
+            ) : (
+              <Image
+                source={require('../assets/arrow.png')}
+                style={{
+                  width: 200,
+                  height: 200,
+                  transform: [
+                    {
+                      rotateZ:
+                        calculateDegree(
+                          currentCoordinate,
+                          targetCoordinate,
+                          heading,
+                        ) + 'deg',
+                    },
+                  ],
+                }}
+                resizeMode="contain"
+              />
+            )}
+          </View>
+        ) : (
+          <View
+            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
+          >
+            <Text> Tidak memiliki izin untuk mengakses lokasi </Text>
+            <TouchableOpacity
+              onPress={async () => {
+                const {status} = await Permissions.askAsync(
+                  Permissions.LOCATION,
+                );
+                this.setState({hasLocationPermission: status === 'granted'});
               }}
-              resizeMode="contain"
-            />
-          ) : (
-            <Image
-              source={require('../assets/arrow.png')}
-              style={{
-                width: 200,
-                height: 200,
-                transform: [
-                  {
-                    rotateZ:
-                      calculateDegree(
-                        currentCoordinate,
-                        targetCoordinate,
-                        heading,
-                      ) + 'deg',
-                  },
-                ],
-              }}
-              resizeMode="contain"
-            />
-          )}
-        </View>
+              style={styles.button}
+            >
+              <Text style={{color: WHITE, fontSize: 16}}>Aktifkan Lokasi</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         <TouchableOpacity
           onPress={() => this._onCompassActive()}
           style={styles.button}
@@ -234,7 +256,8 @@ class Compass extends Component<Props, State> {
   }
 
   _getLocationAsync = async () => {
-    await Permissions.askAsync(Permissions.LOCATION);
+    let {status} = await Permissions.askAsync(Permissions.LOCATION);
+    this.setState({hasLocationAccess: status === 'granted'});
     Location.watchHeadingAsync((heading) => {
       this.setState({heading: heading.magHeading});
     });
