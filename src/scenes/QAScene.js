@@ -14,7 +14,7 @@ import {connect} from 'react-redux';
 import {Ionicons} from '@expo/vector-icons';
 import getIconPre from '../helpers/getIconPre';
 
-import {LIGHT_BLUE, WHITE, GREY} from '../general/colors';
+import {LIGHT_BLUE, WHITE, GREY, ORANGE} from '../general/colors';
 import getStatusBarHeight from '../helpers/getStatusBarHeight';
 import {qaList} from '../data/q&a';
 import CheckItem from '../general/core-ui/CheckItem';
@@ -53,7 +53,7 @@ class QAScene extends Component<Props, State> {
         <Ionicons
           name={`${getIconPre()}-trophy`}
           size={200}
-          color="#000"
+          color={ORANGE}
           backgroundColor="#000000"
           style={{flex: 1, margin: 10}}
         />

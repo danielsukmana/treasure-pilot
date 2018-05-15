@@ -257,12 +257,8 @@ class Compass extends Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => {
-  let {qaList, currentAchievement} = state.qa;
-  if (currentAchievement == null) {
-    index = 0;
-  } else {
-    index = currentAchievement + 1;
-  }
+  let {qaList, succeedList} = state.qa;
+  index = succeedList.length;
   let coordinates = qaList[index].coor;
   return {
     targetCoordinate: {x: coordinates.lat, y: coordinates.long},
