@@ -16,7 +16,7 @@ import {
 import {createStackNavigator, createBottomTabNavigator} from 'react-navigation';
 import Expo, {Constants, Location, Permissions} from 'expo';
 import {Ionicons} from '@expo/vector-icons';
-import {LIGHT_BLUE, ORANGE, WHITE, TRANSPARENT} from '../general/colors';
+import {LIGHT_BLUE, ORANGE, WHITE} from '../general/colors';
 import Header from '../general/core-ui/Header';
 import getStatusBarHeight from '../helpers/getStatusBarHeight';
 import getIconPre from '../helpers/getIconPre';
@@ -50,7 +50,7 @@ type State = {
   heading: number,
   isCompassActive: boolean,
   isHintVisible: boolean,
-  hasLocationAccess: boolean,
+  hasLocationPermission: boolean,
 };
 class Compass extends Component<Props, State> {
   constructor() {
@@ -65,7 +65,7 @@ class Compass extends Component<Props, State> {
       isNeddleActive: true,
       vector: null,
       isHintVisible: false,
-      hasLocationAccess: false,
+      hasLocationPermission: false,
     };
   }
 
@@ -89,7 +89,7 @@ class Compass extends Component<Props, State> {
       isCompassActive,
       isNeddleActive,
       isHintVisible,
-      hasLocationAccess,
+      hasLocationPermission,
     } = this.state;
     let theta = 0;
     if (vector) {
@@ -141,7 +141,7 @@ class Compass extends Component<Props, State> {
           }
           onRightIconPress={() => navigation.navigate('Achievement')}
         />
-        {hasLocationAccess ? (
+        {hasLocationPermission ? (
           <View style={{flex: 1, justifyContent: 'center'}}>
             {isCompassActive ? (
               <ImageBackground
@@ -257,7 +257,7 @@ class Compass extends Component<Props, State> {
 
   _getLocationAsync = async () => {
     let {status} = await Permissions.askAsync(Permissions.LOCATION);
-    this.setState({hasLocationAccess: status === 'granted'});
+    this.setState({hasLocationPermission: status === 'granted'});
     Location.watchHeadingAsync((heading) => {
       this.setState({heading: heading.magHeading});
     });
